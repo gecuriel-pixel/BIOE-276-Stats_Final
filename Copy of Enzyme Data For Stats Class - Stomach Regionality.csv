@@ -1,31 +1,31 @@
-Sample_ID,GI_tract_location,Chitinase,Pepsin
-EF1,Stomach Fundus,Not Detectable,0.8008296296
-EB1,Stomach Body,Not Detectable,2.261111111
-EAN1,Stomach Antrum,Not Detectable,Not Detectable
-EF2,Stomach Fundus,0.00336,0.1705777778
-EB2,Stomach Body,0.05974320988,3.85037037
-EAN2,Stomach Antrum,Not Detectable,Not Detectable
-EF3,Stomach Fundus,0.0813382716,0.3003259259
-EB3,Stomach Body,Not Detectable,Not Detectable
-EAN3,Stomach Antrum,0.01931111111,3.031844444
-EF4,Stomach Fundus,0.06469135802,Not Detectable
-EB4,Stomach Body,0.001844444444,3.526711111
-EAN4,Stomach Antrum,0.114382716,1.643333333
-EF5,Stomach Fundus,0.02627160494,Not Detectable
-EB5,Stomach Body,0.001844444444,1.670888889
-EAN5,Stomach Antrum,0.001382716049,0.1552592593
-EF6,Stomach Fundus,Not Detectable,Not Detectable
-EB6,Stomach Body,Not Detectable,Not Detectable
-EAN6,Stomach Antrum,0.001844444444,1.888266667
-EF7,Stomach Fundus,Not Detectable,0.4137777778
-EB7,Stomach Body,0.003888888889,2.1
-EAN7,Stomach Antrum,Not Detectable,0.0434
-EF8,Stomach Fundus,0.003288888889,0.03288888889
-EB8,Stomach Body,Not Detectable,2.941920741
-EAN8,Stomach Antrum,Not Detectable,0.1144666667
-EF9,Stomach Fundus,0.00139382716,Not Detectable
-EB9,Stomach Body,0.002959259259,1.925955556
-EAN9,Stomach Antrum,0.004869135802,3.361718519
-EF10,Stomach Fundus,0.0003209876543,Not Detectable
-EB10,Stomach Body,0.003965432099,2.056977778
-EAN10,Stomach Antrum,0.004303703704,0.1795259259
+Sample_ID,ID,Crustacean Present,GI_tract_location,Chitinase,Pepsin
+EF1,1,Yes,Stomach Fundus,Not Detectable,0.8008296296
+EB1,1,Yes,Stomach Body,Not Detectable,2.261111111
+EAN1,1,Yes,Stomach Antrum,Not Detectable,Not Detectable
+EF2,2,No,Stomach Fundus,0.00336,0.1705777778
+EB2,2,No,Stomach Body,0.05974320988,3.85037037
+EAN2,2,No,Stomach Antrum,Not Detectable,Not Detectable
+EF3,3,Yes,Stomach Fundus,0.0813382716,0.3003259259
+EB3,3,Yes,Stomach Body,Not Detectable,Not Detectable
+EAN3,3,Yes,Stomach Antrum,0.01931111111,3.031844444
+EF4,4,Yes,Stomach Fundus,0.06469135802,Not Detectable
+EB4,4,Yes,Stomach Body,0.001844444444,3.526711111
+EAN4,4,Yes,Stomach Antrum,0.114382716,1.643333333
+EF5,5,No,Stomach Fundus,0.02627160494,Not Detectable
+EB5,5,No,Stomach Body,0.001844444444,1.670888889
+EAN5,5,No,Stomach Antrum,0.001382716049,0.1552592593
+EF6,6,No,Stomach Fundus,Not Detectable,Not Detectable
+EB6,6,No,Stomach Body,Not Detectable,Not Detectable
+EAN6,6,No,Stomach Antrum,0.001844444444,1.888266667
+EF7,7,No,Stomach Fundus,Not Detectable,0.4137777778
+EB7,7,No,Stomach Body,0.003888888889,2.1
+EAN7,7,No,Stomach Antrum,Not Detectable,0.0434
+EF8,8,No,Stomach Fundus,0.003288888889,0.03288888889
+EB8,8,No,Stomach Body,Not Detectable,2.941920741
+EAN8,8,No,Stomach Antrum,Not Detectable,0.1144666667
+EF9,9,Yes,Stomach Fundus,0.00139382716,Not Detectable
+EB9,9,Yes,Stomach Body,0.002959259259,1.925955556
+EAN9,9,Yes,Stomach Antrum,0.004869135802,3.361718519
+EF10,10,No,Stomach Fundus,0.0003209876543,Not Detectable
+EB10,10,No,Stomach Body,0.003965432099,2.056977778
+EAN10,10,No,Stomach Antrum,0.004303703704,0.1795259259
