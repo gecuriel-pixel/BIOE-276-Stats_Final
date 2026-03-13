@@ -1,0 +1,13 @@
+Sample_ID	- The ID of the individual moray eel followed by the 1 to 2 letter abbreviation of the GI tract location
+ID - The ID of the individual moray eel
+Crustacean Present - Whether or not there was a crustacean found in the GI tract of the moray individual
+GI_tract_location - 3 regions for the small intestine (Anterior, Middle, and Posterior) and 3 regions for the stomach (Fundus, Body, and Antrum)
+Amylase - units = (µmol/(min*g))
+Maltase - units = (µmol/(min*g))
+Lipase - units = (µmol/(min*g))
+NAG - units = (µmol/(min*g))
+AP - units = (µmol/(min*g))
+Trypsin - units = (µmol/(min*g))
+Amino_Peptidase - units = (µmol/(min*g))
+Chitinase - units = (µmol/(min*g))
+Pepsin - units = (µmol/(min*g))
