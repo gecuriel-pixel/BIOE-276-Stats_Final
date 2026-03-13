@@ -1,0 +1,321 @@
+---
+title: "Stats Final Enzyme Data"
+author: "Gabriel Curiel"
+format: pdf
+editor: visual
+---
+
+### Target Audience:
+
+Undergrads and fellow grad students
+
+### Rationale, Background info, Questions: 
+
+Moray eels have the ability to eat really large and infrequently (though commonly do not) and can fast for extended periods of time, making them an interesting model of fasting ectothermic fish. There is evidence of regionality in enzymatic activity in many other species, meaning that within different areas of the stomach and intestine, different enzymes can have different levels of activity, though not much has been done on fishes, especially nonfishery species. My target enzymes for this analysis are all the enzymes in my data set.
+
+Question 1: Is there gut regionality of enzymatic activity for the California Moray Eel (Gymnothorax mordax)?
+
+Chitin is also a very important polysaccharride used in crustacean shells as protection from other organisms. One of its uses is that it can be difficult to digest. While there are some species of morays that are capable of crunching their prey, California moray eels swallow their prey whole, and therefore have to get past a chitinous shell to get to the goodies inside the crustacean bodies. Since they are also capable of fasting for extended periods of time its likely they upregulate their enzymatic activity in response to specific prey types and downregulate to save energy when they are not actively digesting prey with specific complex molecules. This occurs very quickly in between meals in organisms like pythons who are known to eat big and fast, but not known to occur in between meals organisms that eat frequently, with some organisms not exhibiting any upregulation in response to specific prey regardless of what they eat. I want to see if the eels are capable of upregulating specific enzymes in response to specific prey during the meal. The specific enzymes I examined that are directly associated with the breakdown of chitin are chitinase and NAGase, which are the targets for the following chitin question.
+
+Question 2: Is chitin degrading enzymatic activity higher in California Moray Eels who fed on crustaceans recently?
+
+### Approach:
+
+I completed enzymatic assays on 6 different regions of the GI tract of 10 wild caught eels without controlling for diet, and recorded exactly what was found in their GI tract (all of them had prey present). My statistical approach to this is first creating visualizations of the data in the form of bar charts. This does not control for random effects or factors such as individual or chitin for regionality and regionality for chitin, so I tried to account for this by creating models that accounted for all of the factors I had brought in.
+
+I completed some data wrangling on the data sets, then created simple box plots to help visualize the data. Then, I created a model for each independent enzyme with the following factors:
+
+Enzymatic Activity in the specific gut region
+
+Whether there was a crustacean prey in the gut
+
+Random Factor: Who the individual was (this would help account for any individuals who might just be having higher activity in general)
+
+By creating models using brms of both the activity for regions of the gut and the crustacean presence in the moray guts, I will be able to answer both my question of regionality and my question of whether there's a difference in specific enzyme activity levels based on prey. By creating a for loop that created a model for each enzyme, I was able to examine the results for both of my questions for each enzyme, not just the targets of the question, though I still focused on NAGase and chitinase for my chitin response question. This let me see how enzymes I wouldn't have thought to look at reacted to the presence of chitin.
+
+### Highlights of the project
+
+Q1: I found some regionality of certain enzymes based on gut region.
+
+Chitinase was more active in the anterior of the stomach, pepsin was more active in the middle and posterior of the stomach, lipase was more active in the anterior of the intestine, and maltase and amylase were more active in the anterior and middle of the intestine. All other enzymes showed very little or no regionality at all. It is very interesting that only some of them showed clear regionality and some others didn't, which begs further research.
+
+Q2: While I didn't find that the activity was significantly higher when there were crustaceans present in the gut, both chitinase and NAGase had a much higher range of activities when crustaceans were present. To give this a possible reason in ecological context, all eels eat crustaceans, but some eat more crustaceans more often than others. This would result in individuals who eat them more often having higher chitin degrading enzyme activity than those who only eat crustaceans occasionally. This would mean that the species can upregulate specific enzyme activity over time when they consistently eat crustacean meals in order to break down specific molecules in the food, whereas if they do not eat the meal consistently enough, they do not upregulate those enzymes.
+
+Pepsin also resulted in a strangely large range of predicted responses for the brm model that I created for it examining the crustacean presence. While the chains of this model didn't all converge and the rhats were all higher than they should be, it is an interesting result that happened even after running the model creation twice.
+
+All of these model results for both Q1 and Q2 should be taken with a grain of salt due to none of the models having good rhats, unconverging chains, and multiple peaks. This is likely due to the lack of overall data inputted into training the model. However, the boxplots of the data do align with the models to some extent.
+
+### Main message 
+
+We found some evidence of GI regionality of enzymatic activity for chitinase, pepsin, lipase, amylase, and maltase. We also found that morays with crustaceans present in their guts had larger ranges of chitin degrading enzymes.
+
+### Lessons learned along the way
+
+Sometimes you gotta just work with the data you have, where if the data isn't enough to run a perfect model and get great results, you still try and keep that in mind as you interpret the results.
+
+It can be nice to expect all code to fail the first time you run it, that way you aren't upset with it immediately failing with it inevitably does.
+
+My computer really doesn't like running multiple models back to back
+
+For github, make sure to have a metadata
+
+## Reading the csv files of the data with better call back names
+
+```{r}
+stomach <- read.csv("Copy of Enzyme Data For Stats Class - Stomach Regionality.csv")
+intestine<- read.csv("Copy of Enzyme Data For Stats Class - Small Intestine Regionality.csv")
+upreg<-read.csv("Copy of Enzyme Data For Stats Class - Upregulation .csv")
+```
+
+## Preparing Packages
+
+```{r}
+library(ggplot2)
+library(here)
+library(tidyverse)
+
+library(brms)
+library(ggeffects)
+library(modelbased)
+library(faraway)
+```
+
+```{r}
+head(intestine)
+head(stomach)
+head(upreg)
+```
+
+## Reformatting tibbles to better work with our analysis
+
+### Turning Not Detectables into NAs so the code doesn't read them as characters.
+
+(Note "Not Detectables" are NOT 0s in the data, it means that the assay itself could not detect it and should be listed as such)
+
+```{r}
+intestine <- intestine %>%
+  mutate(across(c(Amylase:Amino_Peptidase),
+                ~ as.numeric(.)))
+stomach <- stomach %>%
+  mutate(across(c(Chitinase:Pepsin),
+                ~ as.numeric(.)))
+
+```
+
+```{r}
+upreg<-upreg %>%
+  mutate(across(c(Chitinase:NAGase),
+                ~ as.numeric(.)))
+```
+
+### Changing the tibbles to long format 
+
+```{r}
+intestine_long <- intestine %>%
+  pivot_longer(
+    cols = c(Amylase, Maltase, Lipase, NAG, AP, Trypsin, Amino_Peptidase),
+    names_to = "Enzyme",
+    values_to = "Activity")
+stomach_long <- stomach %>%
+  pivot_longer(
+    cols = c(Chitinase,Pepsin),
+    names_to = "Enzyme",
+    values_to = "Activity")
+
+```
+
+```{r}
+upreg_long <- upreg %>%
+  pivot_longer(
+    cols = c(Chitinase,NAGase),
+    names_to = "Enzyme",
+    values_to = "Activity")
+```
+
+### Changing the names of the location to remove naming redundancies in the figures. 
+
+```{r}
+stomach_long <- stomach_long %>%
+  mutate(GI_tract_location = str_sub(GI_tract_location, 9))
+```
+
+```{r}
+intestine_long_n <- intestine_long %>%
+  mutate(GI_tract_location = word(GI_tract_location, 1))
+```
+
+## Making the box plots
+
+#### Note: NAs will give warnings here and won't be displayed
+
+#### Stomach Regionality
+
+```{r}
+ggplot(intestine_long_n, aes(x = factor(GI_tract_location, levels = c("Anterior", "Middle", "Posterior")), y = Activity, color = GI_tract_location, fill=GI_tract_location)) + 
+  geom_boxplot() + 
+  geom_point(position = position_jitter(width = 0.15),
+             size = .5,
+             alpha = 0.8,
+             color = "black")+
+  facet_wrap(~ Enzyme, scales = "free_y")+ 
+  labs(x="Intestine Location", y="Enzyme Activity (µmol/(min*g))")+
+  theme(legend.position = "none")+
+  scale_fill_brewer(palette = "Dark2") +
+  scale_color_brewer(palette = "Dark2")
+```
+
+#### Intestine Regionality
+
+```{r}
+ggplot(intestine_long_n, aes(x = factor(GI_tract_location, levels = c("Anterior", "Middle", "Posterior")), y = Activity, color = GI_tract_location, fill=GI_tract_location)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width = 0.15),
+           size = .5,
+           alpha = 0.8,
+           color = "black")+
+  facet_wrap(~ Enzyme, scales = "free_y")+
+  labs(x="Intestine Location", y="Enzyme Activity (µmol/(min*g))")+
+  theme(legend.position = "none")+  
+  scale_fill_brewer(palette = "Dark2") +
+  scale_color_brewer(palette = "Dark2") 
+```
+
+#### Upregulation of chitin degrading enzymes based on chitinous prey presense?
+
+```{r}
+ggplot(upreg_long, aes(x = factor(Crustacean.Present, levels = c("Yes", "No")), y = Activity, color = Crustacean.Present, fill=Crustacean.Present)) +
+  geom_boxplot() +
+  facet_wrap(~ Enzyme, scales = "free_y")+
+  geom_point(position = position_jitter(width = 0.15),
+           size = 1,
+           alpha = 0.8,
+           color = "black")+
+  labs(x="Crustacean present in gut?", y="Enzyme Activity (µmol/(min*g))")+
+  theme(legend.position = "none")+  
+  scale_fill_brewer(palette = "Dark2", direction = -1) +
+  scale_color_brewer(palette = "Dark2", direction = -1) 
+```
+
+## Building the models for Intestinal Data and showing results
+
+```{r}
+library(dplyr)
+library(purrr)
+library(brms)
+dir.create("output")
+# Split data by Enzyme
+grouped <- intestine_long_n %>%
+  group_by(Enzyme)
+
+enzyme_data  <- group_split(grouped)
+enzyme_names <- group_keys(grouped)$Enzyme
+
+# Fit model for each enzyme
+models.i <- map2(
+  enzyme_data,
+  enzyme_names,
+  ~ {    # Calculate enzyme-specific prior center
+    priors_i <- c(
+      prior(normal(log(mean(.x$Activity)), 1), class = "b"),
+      prior(exponential(1), class = "sd"),
+      prior(gamma(2, 0.1), class = "shape")
+    )
+    brm(
+      data = .x,
+      family = Gamma,
+      Activity ~ 0 + GI_tract_location + Crustacean.Present + 
+        (1|ID),
+      control = list(adapt_delta = .9),
+       iter = 2000, warmup = 1000, chains = 4, cores = 8,
+      file = paste0("output/m.intestine_", .y)
+    )}
+)
+
+names(models.i) <- enzyme_names
+```
+
+```{r}
+print(models.i, digits = 3)
+```
+
+```{r}
+Amylase_pred <- predict_response(models.i[[1]]) #, bias_correction = TRUE)
+Maltase <- predict_response(models.i[[2]]) #, bias_correction = TRUE)
+Lipase_pred <- predict_response(models.i[[3]]) #, bias_correction = TRUE)
+NAGase_pred <- predict_response(models.i[[4]]) #, bias_correction = TRUE)
+APase_pred <- predict_response(models.i[[5]]) #, bias_correction = TRUE)
+Trypsin_pred <- predict_response(models.i[[6]]) #, bias_correction = TRUE)
+A.peptidase_pred <- predict_response(models.i[[7]]) #, bias_correction = TRUE)
+```
+
+Plotting the model predictions as ranges in a format similar to the earlier box plot visualizations
+
+```{r}
+plot(Amylase_pred, show_data = TRUE)
+plot(Maltase, show_data = TRUE)
+plot(Lipase_pred, show_data = TRUE)
+plot(NAGase_pred, show_data = TRUE)
+plot(APase_pred, show_data = TRUE)
+plot(Trypsin_pred, show_data = TRUE)
+plot(A.peptidase_pred, show_data = TRUE)
+```
+
+## Building Models for stomach enzymes and showing results
+
+Note: because the data set is really small, we will be creating priors for it. We will also be using the map2 function so that we only have to run the code for the model once and it loops through all the enzymes individually. We want to make sure the enzymes run separately because we are looking at them independently.
+
+```{r}
+dir.create("output")
+grouped <- stomach_long %>%
+  group_by(Enzyme)
+
+s.enzyme_data  <- group_split(grouped)
+s.enzyme_names <- group_keys(grouped)$Enzyme
+
+# Fit model for each enzyme
+models.s <- map2(
+  s.enzyme_data,
+  s.enzyme_names,
+  ~ {    # Calculate enzyme-specific prior center
+    priors_s <- c(
+      prior(normal(log(mean(.x$Activity)), 1), class = "b"),
+      prior(exponential(1), class = "sd"),
+      prior(gamma(2, 0.1), class = "shape")
+    )
+    brm(
+      data = .x,
+      family = Gamma,
+      Activity ~ 0 + GI_tract_location + Crustacean.Present + 
+        (1|ID),
+      control = list(adapt_delta = .9),
+       iter = 2000, warmup = 1000, chains = 4, cores = 8,
+      file = paste0("output/m.stomach_", .y)
+    )}
+)
+
+names(models.s) <- s.enzyme_names
+```
+
+```{r}
+print(models.s, digits = 3)
+```
+
+```{r}
+Chitinase_pred <- predict_response(models.s[[1]]) #, bias_correction = TRUE)
+Pepsin_pred <- predict_response(models.s[[2]]) #, bias_correction = TRUE)
+```
+
+Plotting the model predictions
+
+```{r}
+plot(Chitinase_pred, show_data = TRUE)
+plot(Pepsin_pred, show_data = TRUE)
+```
+
+## Plotting the results for the chitin degrading questions to see how the presence of crustacean prey interact with the activity and GI tract location
+
+```{r}
+plot(NAGase_pred, show_data = TRUE)
+plot(Chitinase_pred, show_data = TRUE)
+plot(Pepsin_pred, show_data = TRUE)
+```
